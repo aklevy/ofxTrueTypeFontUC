@@ -10,10 +10,17 @@
 #include FT_TRIGONOMETRY_H
 #include <fontconfig/fontconfig.h>
 #else
+#if (OF_VERSION_MAJOR == 0) && (OF_VERSION_MINOR <= 8)
+#include "freetype2/freetype/freetype.h"
+#include "freetype2/freetype/ftglyph.h"
+#include "freetype2/freetype/ftoutln.h"
+#include "freetype2/freetype/fttrigon.h"
+#else
 #include "freetype/freetype.h"
 #include "freetype/ftglyph.h"
 #include "freetype/ftoutln.h"
 #include "freetype/fttrigon.h"
+#endif
 #endif
 
 #include <algorithm>
@@ -578,6 +585,10 @@ void ofxTrueTypeFontUC::reloadFont() {
 }
 
 //-----------------------------------------------------------
+bool ofxTrueTypeFontUC::load(string filename, int fontsize, bool bAntiAliased, bool makeContours, float simplifyAmt, int dpi) {
+   return loadFont(filename, fontsize, bAntiAliased, makeContours, simplifyAmt, dpi);
+}
+
 bool ofxTrueTypeFontUC::loadFont(string filename, int fontsize, bool bAntiAliased, bool makeContours, float simplifyAmt, int dpi) {
     return mImpl->implLoadFont(filename, fontsize, bAntiAliased, makeContours, simplifyAmt, dpi);
 
@@ -1050,7 +1061,15 @@ std::vector<line> ofxTrueTypeFontUC::cutWords(const std::string wordTxt, int lin
                         l.bbox.setHeight(l.bbox.getHeight() + (btmp - l.bottom));
                         l.bottom = btmp;
                     }
-                    else{
+                    else{ #if (OF_VERSION_MAJOR == 0 && #if (OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR >= 9 && OF_VERSION_PATCH >= 2) || OF_VERSION_MAJOR > 0
+                               +	textures[i].loadData(atlasPixels.getData(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
+                               +  #else
+                               +	textures[i].loadData(atlasPixels.getPixels(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
+                               +  #endif OF_VERSION_MINOR >= 9 && OF_VERSION_PATCH >= 2) || OF_VERSION_MAJOR > 0
+                                +	textures[i].loadData(atlasPixels.getData(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
+                                +  #else
+                                +	textures[i].loadData(atlasPixels.getPixels(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
+                                +  #endif
                         l.bbox.setHeight(max(mImpl->cps[cy].tH ,l.bbox.getHeight()));
                     }
                     // if the letter is bigger than 'x' (top)
@@ -2378,8 +2397,11 @@ void ofxTrueTypeFontUC::Impl::loadChar(const int &charID) {
     else {
         textures[i].setTextureMinMagFilter(GL_NEAREST,GL_NEAREST);
     }
-
-    textures[i].loadData(atlasPixels.getData(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_RGBA);
+#if (OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR >= 9 && OF_VERSION_PATCH >= 2) || OF_VERSION_MAJOR > 0
+        textures[i].loadData(atlasPixels.getData(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
+  #else
+        textures[i].loadData(atlasPixels.getPixels(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
+  #endif
 
 }
 //-----------------------------------------------------------
