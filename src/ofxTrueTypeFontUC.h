@@ -56,22 +56,17 @@ public:
     void    changeFontSize  (int fontSize);
 
     // Parsing multiline text
-    std::vector<line>   cutWords        (const std::string wordTxt, int lineWidth, string ltxt,
-                                         int lwidth,  int lheight, ofPoint lpos, int lbot, int ltop);
-    line                addNewChar      (line l, int c);
-    line                startNewLine    (line l);
     multiline           parseText       (const std::string txtSrc, int lineWidth, const ofPoint position, ALIGN alignType = LEFT);
 
     // to draw on the baseLine which position is defined by the argument 'ofPoint position' in parseText
-    void                drawMultiline   (const multiline &multi, bool baseLine = false);
-    void                drawStringLine  (const line &sline, int index, bool baseLine = false);
+    void    drawMultiline           (const multiline &multi, bool baseLine = false);
+    void    drawMultilineAsShapes    (const multiline &multi);
 
-    void                drawMultilineAsShapes   (const multiline &multi);
-    void                drawLineAsShapes        (const line &sline);
+    // get the bounding box of the multiline
+    ofRectangle getMultilineBoundingBox(const multiline &multi){return multi.boundingBox;}
 
-    ofRectangle         getLineBoundingBox      (const line &l, int width, ALIGN alignType);
-    ofRectangle         getMultilineBoundingBox (const std::vector<line> &lines);
 
+    // get the number of words which have been cut during the multiline parsing
     int getNbWordCut(const multiline &multi);
 
     // new methods using only utf8 and large texture
@@ -84,11 +79,9 @@ public:
     float getLinePositionY(const multiline &multi, int lineNb, bool baseLine);
     float getLastLinePositionY(const multiline &multi, bool baseLine);
 
-    void drawStringOld(const string &str, float x, float y);
     void drawStringAsShapes(const string &str, float x, float y);
 
     vector<ofPath> getStringAsPoints(const string &str, bool vflip=ofIsVFlipped());
-    ofRectangle getStringBoundingBoxOld(const string &str, float x, float y);
 
     bool    isLoaded();
     bool    isAntiAliased();
@@ -125,5 +118,19 @@ private:
     Impl *mImpl;
 
 
+    /* Methods used for multiline */
+    // Methods for parsing the text
+    std::vector<line>   cutWords                (const std::string wordTxt, int lineWidth, string ltxt,
+                                                 int lwidth,  int lheight, ofPoint lpos, int lbot, int ltop);
+    line                addNewChar              (line l, int c);
+    line                startNewLine            (line l);
+
+    // Methods for drawing multiline
+    void                drawStringLine          (const line &sline, int index, bool baseLine = false);
+    void                drawLineAsShapes        (const line &sline);
+
+    // Methods to compute the multiline bouding box
+    ofRectangle         getLineBoundingBox      (const line &l, int width, ALIGN alignType);
+    ofRectangle         getLinesBoundingBox     (const std::vector<line> &lines);
 
 };

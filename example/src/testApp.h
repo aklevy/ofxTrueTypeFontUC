@@ -21,8 +21,14 @@ public:
   void gotMessage(ofMessage msg);
   
   ofxTrueTypeFontUC myFont;
-  string sampleString;
-  ofPoint p1, p2, p3;
-  ofRectangle rect1, rect2, rect3;
-  vector<ofPath> characters;
+  multiline         multi;
+  ALIGN             alignType;
+  bool              drawOnBaseline;
+  int               lineWidth;
+
+  string            sampleString;
+  ofPoint           p1;
+  ofRectangle       rect1;
+
+  bool              displayHelp;
 };

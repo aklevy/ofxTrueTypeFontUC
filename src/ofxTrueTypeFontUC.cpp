@@ -1061,15 +1061,7 @@ std::vector<line> ofxTrueTypeFontUC::cutWords(const std::string wordTxt, int lin
                         l.bbox.setHeight(l.bbox.getHeight() + (btmp - l.bottom));
                         l.bottom = btmp;
                     }
-                    else{ #if (OF_VERSION_MAJOR == 0 && #if (OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR >= 9 && OF_VERSION_PATCH >= 2) || OF_VERSION_MAJOR > 0
-                               +	textures[i].loadData(atlasPixels.getData(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
-                               +  #else
-                               +	textures[i].loadData(atlasPixels.getPixels(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
-                               +  #endif OF_VERSION_MINOR >= 9 && OF_VERSION_PATCH >= 2) || OF_VERSION_MAJOR > 0
-                                +	textures[i].loadData(atlasPixels.getData(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
-                                +  #else
-                                +	textures[i].loadData(atlasPixels.getPixels(), atlasPixels.getWidth(), atlasPixels.getHeight(), GL_LUMINANCE_ALPHA);
-                                +  #endif
+                    else{
                         l.bbox.setHeight(max(mImpl->cps[cy].tH ,l.bbox.getHeight()));
                     }
                     // if the letter is bigger than 'x' (top)
@@ -1570,7 +1562,7 @@ multiline ofxTrueTypeFontUC::parseText(const std::string txtSrc, int lineWidth, 
 
     multi.lines         = vecLines;
     multi.width         = lineWidth;
-    multi.boundingBox   = getMultilineBoundingBox(vecLines);
+    multi.boundingBox   = getLinesBoundingBox(vecLines);
 
     return multi;
 }
@@ -1600,7 +1592,7 @@ ofRectangle ofxTrueTypeFontUC::getLineBoundingBox(const line &l, int width, ALIG
     return newbbox;
 }
 
-ofRectangle ofxTrueTypeFontUC::getMultilineBoundingBox(const std::vector<line> &lines){
+ofRectangle ofxTrueTypeFontUC::getLinesBoundingBox(const std::vector<line> &lines){
     ofRectangle res(0,0,0,0);
     if(lines.size()>0){
         for (int i = 0 ; i < lines.size() ; i++) {

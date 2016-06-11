@@ -2,19 +2,24 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-  myFont.loadFont("dummyFont.ttf", 64, true, true);
+  myFont.loadFont("NotoSansCJKjp-Regular.otf", 15, true, true);
   
-  sampleString = "あいうえお";
-  
-  p1 = ofPoint(100, 200);
-  p2 = ofPoint(200, 300);
-  p3 = ofPoint(300, 400);
-  
-  rect1 = myFont.getStringBoundingBox(sampleString, p1.x, p1.y);
-  rect2 = myFont.getStringBoundingBox(sampleString, p2.x, p2.y);
-  rect3 = myFont.getStringBoundingBox(sampleString, p3.x, p3.y);
-  
-  characters = myFont.getStringAsPoints(sampleString);
+  ofBackground(0,0,0);
+
+  /* Multiline example */
+  sampleString = "ここでは主にウサギ亜科について記述する（ウサギ目・ウサギ科についてはそれぞれを参照）。\n 現在の分類では、ウサギ亜科には全ての現生ウサギ科を含めるが、かつては一部を含めない分類もあった。\nウサギ目はウサギ科以外に、ナキウサギ科と絶滅したプロラグスなどを含む。";
+  alignType = LEFT;
+  lineWidth = 400;
+  p1 = ofPoint(100, 80);
+  drawOnBaseline = false;
+
+  multi = myFont.parseText(sampleString,lineWidth, p1,alignType);
+
+  rect1 = myFont.getMultilineBoundingBox(multi);
+
+
+
+  displayHelp = true;
 }
 
 //--------------------------------------------------------------
@@ -25,32 +30,106 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
   string fpsStr = "frame rate: " + ofToString(ofGetFrameRate(), 2);
-  ofDrawBitmapString(fpsStr, 100, 100);
+  ofDrawBitmapString(fpsStr, 100, 50);
+
+  ofPushStyle();
+  ofSetColor(255,0,0,255);
+
+  // draw line width
+  ofDrawBitmapString("line width ", 0, 60);
+  ofDrawLine (100, 60, 100 + lineWidth,60);
+
+  // draw bounding box
+  ofDrawBitmapString("bbox ", 0, p1.y);
+  ofNoFill();
+  ofDrawRectangle(rect1);
+
+
+  ofPopStyle();
+
+  myFont.drawMultiline(multi, drawOnBaseline);
   
-  ofLine(rect1.getTopLeft(), rect1.getTopRight());
-  ofLine(rect1.getTopRight(), rect1.getBottomRight());
-  ofLine(rect1.getBottomRight(), rect1.getBottomLeft());
-  ofLine(rect1.getBottomLeft(), rect1.getTopLeft());
-  myFont.drawString(sampleString, p1.x, p1.y);
-  
-  ofLine(rect2.getTopLeft(), rect2.getTopRight());
-  ofLine(rect2.getTopRight(), rect2.getBottomRight());
-  ofLine(rect2.getBottomRight(), rect2.getBottomLeft());
-  ofLine(rect2.getBottomLeft(), rect2.getTopLeft());
-  myFont.drawStringAsShapes(sampleString, p2.x, p2.y);
-  
-  ofLine(rect3.getTopLeft(), rect3.getTopRight());
-  ofLine(rect3.getTopRight(), rect3.getBottomRight());
-  ofLine(rect3.getBottomRight(), rect3.getBottomLeft());
-  ofLine(rect3.getBottomLeft(), rect3.getTopLeft());
-  vector<ofPath>::iterator iter = characters.begin();
-  for (; iter != characters.end(); ++iter)
-    (*iter).draw(p3.x, p3.y);
+  if(displayHelp)
+  {
+      string helpStr = "Press 'h' to toggle this help message display \n";
+      helpStr += "Press '0' or '1' to change font size \n";
+      helpStr += "Press '2' or '3' or '4' to change the line width \n";
+      helpStr += "Press 'j' to change the text into a japanese one \n";
+      helpStr += "Press 'f' to change the text into a french one\n";
+      helpStr += "Press 'b' to toggle drawing on the base line corresponding to the upper side of the bbox\n";
+      helpStr += "Press 'l'(or 'r', 'c') for left (or right, center) alignment";
+
+      ofPushStyle();
+      ofSetColor(255,0,0,255);
+     ofDrawBitmapString(helpStr, 100,ofGetWindowHeight()-200);
+     ofPopStyle();
+  }
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-  
+
+    // toggle display help message
+    if (key == 'h'){
+       displayHelp = !displayHelp;
+       return;
+    }
+    // toggle drawing on the baseline
+    else if (key == 'b'){
+        drawOnBaseline = !drawOnBaseline;
+        return;
+    }
+    // change font Size
+    else if (key == '0'){
+        myFont.changeFontSize(8);
+
+    }
+    else if (key == '1'){
+        myFont.changeFontSize(35);
+
+    }
+    // change line width
+    else if (key == '2'){
+        lineWidth = 100;
+
+    }
+    else if (key == '3'){
+        lineWidth = 400;
+    }
+    else if (key == '4'){
+        lineWidth = 600;
+    }
+    // change string to french text
+    else if (key == 'f'){
+        sampleString = "Lapin est en fait un nom vernaculaire ambigu, désignant une partie seulement des différentes espèces de mammifères classées dans la famille des Léporidés,\n famille qui regroupe à la fois les lièvres et les lapins.";
+
+
+    }
+    // change string to japanese text
+    else if (key == 'j'){
+        sampleString = "ここでは主にウサギ亜科について記述する（ウサギ目・ウサギ科についてはそれぞれを参照）。\n 現在の分類では、ウサギ亜科には全ての現生ウサギ科を含めるが、かつては一部を含めない分類もあった。\nウサギ目はウサギ科以外に、ナキウサギ科と絶滅したプロラグスなどを含む。";
+
+    }
+    // change multilign alignement to left
+    else if (key == 'l')
+    {
+        alignType = ALIGN::LEFT;
+    }
+    // change multilign alignement to right
+    else if (key == 'r')
+    {
+        alignType = ALIGN::RIGHT;
+    }
+    // change multilign alignement to center
+    else if (key == 'c')
+    {
+        alignType = ALIGN::CENTER;
+    }
+
+
+    //update multiline structure
+    multi = myFont.parseText(sampleString,lineWidth,p1,alignType);
+    rect1 = myFont.getMultilineBoundingBox(multi);
 }
 
 //--------------------------------------------------------------
